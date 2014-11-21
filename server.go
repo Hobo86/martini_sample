@@ -34,9 +34,7 @@ func main() {
 		r.HTML(200, "hello", params["name"])
 	})
 
-	m.Get("/admin/user", func(r render.Render) {
-		r.HTML(200, "admin/user", "Steven")
-	})
+	m.Get("/admin/user", admin.UserHandler)
 
 	// 该方法将会在authorize方法没有输出结果的时候执行.
 	// 用作接口及权限验证
