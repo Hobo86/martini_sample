@@ -7,11 +7,12 @@ import (
 )
 
 type User struct {
-	Id        int64     `form:"id"`
-	Nickname  string    `form:"nickname"`
-	Gender    int64     `form:"gender"`
-	CreatedAt time.Time `form:"create_time"`
-	UpdatedAt time.Time `xorm:"update_time"`
+	Id        int64
+	Nickname  string
+	Gender    int64
+	Birthday  time.Time
+	CreatedAt time.Time `gorm:"column:create_time"`
+	UpdatedAt time.Time `gorm:"column:modify_time"`
 }
 
 func (u User) TableName() string {

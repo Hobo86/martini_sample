@@ -2,10 +2,15 @@
 <html>
   <head>
     <title>Hobo</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+	<script type="text/javascript" src="/js/lib/require-setup.js"></script>
+	<script data-main="scripts/main" src="/js/lib/require.js"></script>
   </head>
   <body>
     <!-- Render the current template here -->
-    {{ yield }}
-    <p>devhobo.com</p>
+    <div class="container" style="padding:50px 20px; width:900px;">
+	    {{ yield }}
+	    <p class="text-center">This is the {{ current }} page.</p>
+	</div>
   </body>
 </html>

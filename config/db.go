@@ -6,7 +6,7 @@ import (
 )
 
 func DB() gorm.DB {
-	sqlConnection := "root:meet771027@tcp(127.0.0.1:3306)/im?parseTime=True"
+	sqlConnection := "root:123456@tcp(127.0.0.1:3306)/im?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", sqlConnection)
 	if err != nil {
 		panic(err)

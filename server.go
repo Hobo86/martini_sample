@@ -38,11 +38,12 @@ func main() {
 		r.HTML(200, "hello", params["name"])
 	})
 
-	m.Get("/admin/user", admin.UserHandler)
+	m.Get("/admin/user/(?P<id>[0-9]*)", admin.UserHandler)
 
 	// 该方法将会在authorize方法没有输出结果的时候执行.
 	// 用作接口及权限验证
 	m.Group("/api", func(r martini.Router) {
+
 		// m.Get("/user/:id", authorize, api.UserHandler)
 		m.Get("/user/(?P<id>[0-9]*)", api.UserHandler)
 
@@ -52,8 +53,8 @@ func main() {
 	})
 
 	m.NotFound(func(r render.Render) {
-		// 处理 404
-		r.HTML(404, "404", "")
+		// 404
+		r.HTML(404, "40x", "404-Not found!")
 	})
 
 	m.Run()
@@ -63,17 +64,21 @@ func InitDB() {
 
 }
 
-func Auth(res http.ResponseWriter, req *http.Request) {
+func Auth(res http.ResponseWriter, req *http.Request, r render.Render) {
 	if req.Header.Get("API-KEY") != "secret123" {
 		res.WriteHeader(http.StatusUnauthorized)
-		http.Error(res, "Nope", 401)
+
+		// 403
+		r.HTML(403, "40x", "403-Access Forbidden!")
 	}
 }
 
-func authorize(res http.ResponseWriter, req *http.Request) {
+func authorize(res http.ResponseWriter, req *http.Request, r render.Render) {
 	if req.Header.Get("API-KEY") != "secret123" {
 		res.WriteHeader(http.StatusUnauthorized)
-		http.Error(res, "Nope", 401)
+
+		// 403
+		r.HTML(403, "40x", "403-Access Forbidden!")
 	} else {
 		return
 	}
