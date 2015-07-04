@@ -1,4 +1,4 @@
-package demo
+package www
 
 import (
 	"net/http"
@@ -7,5 +7,5 @@ import (
 )
 
 func DemoHandler(res http.ResponseWriter, req *http.Request, r render.Render) {
-	r.HTML(200, "demo/index", "")
+	r.HTML(200, "www/demo", "")
 }

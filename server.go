@@ -12,7 +12,6 @@ import (
 
 	"./config"
 	"./routers/api"
-	"./routers/demo"
 	"./routers/www"
 
 	"./models"
@@ -49,6 +48,10 @@ func main() {
 	// Routes
 	m.Get("/", www.HomeHandler)
 
+	m.Group("/demo", func(r martini.Router) {
+		m.Get("", www.DemoHandler)
+	})
+
 	m.Group("", func(r martini.Router) {
 
 		m.Get("/regist", www.RegistHandler)
@@ -62,10 +65,6 @@ func main() {
 		m.Get("/user/(?P<id>[0-9]*)", sessionauth.LoginRequired, www.UserHandler)
 
 		m.Get("/about", www.AboutHandler)
-	})
-
-	m.Group("/demo", func(r martini.Router) {
-		m.Get("", demo.DemoHandler)
 	})
 
 	m.Group("/api", func(r martini.Router) {
