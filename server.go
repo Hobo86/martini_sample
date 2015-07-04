@@ -4,13 +4,18 @@ import (
 	"net/http"
 
 	"github.com/go-martini/martini"
-	"github.com/martini-contrib/auth"
+	// "github.com/martini-contrib/auth"
+	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
+	"github.com/martini-contrib/sessionauth"
+	"github.com/martini-contrib/sessions"
 
 	"./config"
-	"./router"
-	"./router/admin"
-	"./router/api"
+	"./routers/api"
+	"./routers/demo"
+	"./routers/www"
+
+	"./models"
 )
 
 func main() {
@@ -25,31 +30,53 @@ func main() {
 	// m.Use(Auth)
 
 	// martini-contrib/auth
-	m.Use(auth.Basic("steven", "123456"))
+	// m.Use(auth.Basic("steven", "123456"))
 
 	// martini-contrib/render
 	m.Use(render.Renderer(render.Options{
 		Layout: "layout",
 	}))
 
-	m.Get("/", router.HomeHandler)
+	// sessions
+	store := sessions.NewCookieStore([]byte("123456"))
+	m.Use(sessions.Sessions("my_session", store))
 
-	m.Get("/hello/:name", func(params martini.Params, r render.Render) {
-		r.HTML(200, "hello", params["name"])
+	// sessionauth
+	m.Use(sessionauth.SessionUser(model.GenerateAnonymousUser))
+	sessionauth.RedirectUrl = "/login"
+	sessionauth.RedirectParam = "redirect-url"
+
+	// Routes
+	m.Get("/", www.HomeHandler)
+
+	m.Group("", func(r martini.Router) {
+
+		m.Get("/regist", www.RegistHandler)
+		m.Post("/regist", binding.Bind(model.User{}), www.RegistPostHandler)
+
+		m.Get("/login", www.LoginHandler)
+		m.Post("/login", binding.Bind(model.User{}), www.LoginPostHandler)
+
+		m.Get("/logout", sessionauth.LoginRequired, www.LogoutHandler)
+
+		m.Get("/user/(?P<id>[0-9]*)", sessionauth.LoginRequired, www.UserHandler)
+
+		m.Get("/about", www.AboutHandler)
 	})
 
-	m.Get("/admin/user/(?P<id>[0-9]*)", admin.UserHandler)
+	m.Group("/demo", func(r martini.Router) {
+		m.Get("", demo.DemoHandler)
+	})
 
-	// 该方法将会在authorize方法没有输出结果的时候执行.
-	// 用作接口及权限验证
 	m.Group("/api", func(r martini.Router) {
 
+		// 在authorize方法没有输出时继续执行，用作接口验证
 		// m.Get("/user/:id", authorize, api.UserHandler)
 		m.Get("/user/(?P<id>[0-9]*)", api.UserHandler)
 
-		m.Get("/user/login", api.UserLoginHandler)
+		m.Get("/login", api.UserLoginHandler)
 
-		m.Get("/user/regist", api.UserRegistHandler)
+		m.Get("/regist", api.UserRegistHandler)
 	})
 
 	m.NotFound(func(r render.Render) {
@@ -62,6 +89,14 @@ func main() {
 
 func InitDB() {
 
+}
+
+func LoginAuth(r render.Render, session sessions.Session) {
+	v := session.Get("userId")
+	if v == nil {
+		r.HTML(200, "www/login", "")
+	}
+	return
 }
 
 func Auth(res http.ResponseWriter, req *http.Request, r render.Render) {

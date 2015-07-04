@@ -6,7 +6,7 @@ import (
 )
 
 func DB() gorm.DB {
-	sqlConnection := "root:123456@tcp(127.0.0.1:3306)/im?charset=utf8mb4&parseTime=True&loc=Local"
+	sqlConnection := "manatini_dba:123456@tcp(127.0.0.1:3306)/manatini_db?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", sqlConnection)
 	if err != nil {
 		panic(err)

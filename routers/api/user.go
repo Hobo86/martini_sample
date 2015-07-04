@@ -1,4 +1,4 @@
-package admin
+package api
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/render"
 
-	"../../model"
+	"../../models"
 )
 
 func UserHandler(params martini.Params, res http.ResponseWriter, req *http.Request, r render.Render, db gorm.DB) {
@@ -20,6 +20,15 @@ func UserHandler(params martini.Params, res http.ResponseWriter, req *http.Reque
 
 	user := &model.User{}
 	u := user.GetUserById(id, db)
+	r.JSON(200, u)
+}
 
-	r.HTML(200, "admin/user", u)
+func UserLoginHandler(res http.ResponseWriter, req *http.Request, r render.Render) {
+
+	r.JSON(200, map[string]interface{}{"URI": "api user login"})
+}
+
+func UserRegistHandler(res http.ResponseWriter, req *http.Request, r render.Render) {
+
+	r.JSON(200, map[string]interface{}{"URI": "api user regist"})
 }
